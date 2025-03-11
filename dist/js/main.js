@@ -1,41 +1,34 @@
+const { JSDOM } = require('jsdom');
+const dom = new JSDOM(`<!DOCTYPE html><html><head></head><body></body></html>`);
+global.window = dom.window;
+global.document = dom.window.document;
+global.XMLHttpRequest = dom.window.XMLHttpRequest;
+
+// Your existing game code here
 window.addEventListener('load', init);
 
 var words = [];
 
-//Load words
-async function load_words()
-{
+// Load words
+async function load_words() {
   return new Promise(resolve => {
-    var xmlhttp;
-    if (window.XMLHttpRequest)
-    {
-      //  IE7+, Firefox, Chrome, Opera, Safari 
-      xmlhttp=new XMLHttpRequest();
-    }
-    else
-    {
-      // IE6, IE5 
-      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    xmlhttp.onreadystatechange=function()
-    {
-      if (xmlhttp.readyState==4 && xmlhttp.status==200)
-      {
-        
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function () {
+      if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
         if (navigator.userAgentData.platform === "Windows")
-          words=xmlhttp.responseText.split("\r\n");
+          words = xmlhttp.responseText.split("\r\n");
         else
-          words=xmlhttp.responseText.split("\n");
+          words = xmlhttp.responseText.split("\n");
 
         words = words.map(string => {
           const parts = string.split(" - ");
           return { acronym: parts[0], terms: parts[1] };
         });
-        
+
         resolve('resolved');
       }
-    }
-    xmlhttp.open("GET","words.txt",true);
+    };
+    xmlhttp.open("GET", "words.txt", true);
     xmlhttp.send();
   });
 }
